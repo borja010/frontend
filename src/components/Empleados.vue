@@ -66,7 +66,7 @@
                   </v-flex>
 
                   <v-flex xs12 md6>
-                    <v-select v-model="empleado.tipo_empleado" :items="tipo_empleado" :rules="validaciones.requerido" item-text="descripcion" item-value="valor" label="Tipo empleado"></v-select>
+                    <v-select v-model="empleado.tipoEmpleado" :items="tipoEmpleado" :rules="validaciones.requerido" item-text="descripcion" item-value="codigo_tipo_empleado" label="Tipo empleado"></v-select>
                   </v-flex>
 
                 </v-layout>
@@ -82,6 +82,44 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+      <v-dialog v-model="account" persistent max-width="500px">
+        <v-card>
+          <v-card-title>
+            <span class="headline">Crear acceso</span>
+          </v-card-title>
+
+          <v-card-text>
+            <v-form :key="cuentaForm" v-model="valid">
+              <v-container grid-list-md>
+                <v-layout wrap>
+                  <v-flex xs12 md6>
+                    <v-text-field v-model="cuenta.usuario" :rules="validaciones.nombres" label="Usuario"></v-text-field>
+                  </v-flex>
+
+                  <v-flex xs12 md6>
+                    <v-select v-model="cuenta.tipoAcceso" :items="tipoAcceso" :rules="validaciones.requerido" item-text="descripcion" item-value="valor" label="Tipo acceso"></v-select>
+                  </v-flex>
+
+                  <v-flex xs12 md6>
+                    <v-text-field v-model="cuenta.password" type="password" :rules="validaciones.apellidos" label="Contraseña"></v-text-field>
+                  </v-flex>
+
+                  <v-flex xs12 md6>
+                    <v-text-field v-model="cuenta.validar" type="password" :rules="validaciones.apellidos" label="Validar contraseña"></v-text-field>
+                  </v-flex>
+
+                </v-layout>
+              </v-container>
+            </v-form>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" flat @click="closeAccount">Cancelar</v-btn>
+            <v-btn color="blue darken-1" flat @click="saveAccount" :disabled="!valid">Guardar</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-toolbar>
     <v-data-table :headers="headers" :items="empleados" :pagination.sync="pagination" :rows-per-page-items="rowsPerPageItems" :total-items="totalEmpleados" @update:pagination="reload()" loading:="loading" class="elevation-1">
       <template v-slot:items="props">
@@ -94,7 +132,7 @@
         <td v-if="props.item.genero == 'm'">Hombre</td>
         <td v-else>Mujer</td>
         <td>
-          <v-icon small class="mr-2" @click="editItem(props.item)">
+          <v-icon small class="mr-2" @click="editAccount(props.item)">
             account_box
           </v-icon>  
           <v-icon small class="mr-2" @click="editItem(props.item)">
@@ -121,6 +159,7 @@ import services from '../services';
   export default {
     data: () => ({
       form: 1,
+      cuentaForm: 1,
       dialog: false,
       loading: true,
       valid: false,
@@ -128,6 +167,7 @@ import services from '../services';
       updated: false,
       exist: false,
       deleting: false,
+      account: false,
       search: '',
       rowsPerPageItems: [5, 10, 15, 20],
       pagination: {
@@ -147,13 +187,23 @@ import services from '../services';
       ],
       empleados: [],
       empleadoActivo: -1,
+      cuenta:{
+        usuario: '',
+        password: '',
+        validar: '',
+        tipoAcceso: ''
+      },
+      tipoAcceso:[
+        {valor: 'admin', descripcion: 'Administrador'},
+        {valor: 'supervisor', descripcion: 'Supervisor'}
+      ],
       empleado: 
       {
         nombres: '',
         apellido1: '',
         apellido2: '',
         apellidos: '',
-        tipo_empleado: '',
+        tipoEmpleado: '',
         dpi: '',
         telefono: '',
         celular: '',
@@ -164,7 +214,7 @@ import services from '../services';
         {codigo_genero: 'm', genero: 'Masculino'}, 
         {codigo_genero: 'f', genero: 'Femenino'}
       ],
-      tipo_empleado: [],
+      tipoEmpleado: [],
       validaciones:
       {
         nombres:[
@@ -213,11 +263,8 @@ import services from '../services';
       },
 
       reload(){
-        services.login({usuario: "admin", password: "borja.010"}).then(response =>{
-          console.log(response);
-        });
         services.obtenerTipoEmpleado().then(response =>{
-          this.tipo_empleado = response.data;
+          this.tipoEmpleado = response.data;
         }, errorResponse =>{
             console.error(errorResponse);
           });
@@ -235,9 +282,15 @@ import services from '../services';
         });
       },
 
-      editItem (item) {
+      editAccount(item) {
+        this.empleadoActivo = item.codigo_empleado;
+        this.account = true
+      },
+
+      editItem(item) {
         this.empleadoActivo = item.codigo_empleado;
         this.empleado = Object.assign({}, item);
+        this.empleado.tipoEmpleado = this.tipoEmpleado.find(x => x.descripcion === item.tipo_empleado).codigo_tipo_empleado;
         this.dialog = true
       },
 
@@ -253,6 +306,7 @@ import services from '../services';
         }else{
           this.reload();
         }
+        this.empleadoActivo = -1;
       },
 
       close() {
@@ -260,7 +314,12 @@ import services from '../services';
         this.resetearForm();
       },
 
-      save () {
+      closeAccount() {
+        this.account = false;
+        this.resetearCuenta();
+      },
+
+      save() {
         let apellidos = this.empleado.apellidos.trim().split(' ');
         this.empleado.apellido1 = apellidos.shift();
         if(apellidos.length > 0){
@@ -275,6 +334,13 @@ import services from '../services';
           }
         }, errorResponse =>{
             console.error(errorResponse);
+        });
+      },
+
+      saveAccount(){
+        this.cuenta.codigoEmpleado = this.empleadoActivo;
+        services.guardarUsuario(this.cuenta).then(response =>{
+
         });
       },
 
@@ -309,7 +375,16 @@ import services from '../services';
         this.empleado.telefono = '';
         this.empleado.celular = '';
         this.empleado.genero = '';
+      },
+
+      resetearCuenta(){
+        this.cuentaForm++,
+        this.empleadoActivo = -1;
+        this.cuenta.usuario = '',
+        this.cuenta.password = '',
+        this.cuenta.validar = '',
+        this.cuenta.tipoAcceso = ''
       }
-    }
+    },
   }
 </script>

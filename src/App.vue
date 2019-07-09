@@ -1,14 +1,12 @@
 <template>
   <v-app>
+    <loading-component :loading="loading"></loading-component>
     <div v-if="login !== 'no-toolbar'">
-      <loading-component :loading="loading"></loading-component>
       <v-toolbar app>
         <v-toolbar-side-icon @click.stop="sideNav = !sideNav" class="hidden-sm-and-up"></v-toolbar-side-icon>
         <v-toolbar-title class="headline text-uppercase">
-          <router-link to="/" tag="span" style="cursor: pointer">
-            <span>SIS</span>
-            <span class="font-weight-light">TRAC</span>
-          </router-link>
+          <span>SIS</span>
+          <span class="font-weight-light">TRAC</span>
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <template>
@@ -43,6 +41,7 @@
                 </v-list-tile>
               </v-list>
             </v-menu>
+            <v-btn flat @click="cerrarSesion = true">Cerrar Sesion</v-btn>
           </v-toolbar-items>
         </template>
       </v-toolbar>
@@ -94,12 +93,30 @@
               <v-list-tile-title>Reporte Entradas y Salidas</v-list-tile-title>
             </v-list-tile>
           </v-list>
+          <v-list-tile @click="cerrarSesion = true">
+            <v-list-tile-content>
+              <v-list-tile-title>Cerrar Sesion</v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
         </v-list>
       </v-navigation-drawer>
     </div>
     <v-content>
       <router-view :loading="loading"></router-view>
     </v-content>
+    <v-layout row justify-center>
+      <v-dialog v-model="cerrarSesion" persistent max-width="290">
+        <v-card>
+          <v-card-title class="headline">Sesion activa</v-card-title>
+          <v-card-text>¿Desea cerrar sesion?</v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" flat @click="cerrarSesion = false">No</v-btn>
+            <v-btn color="primary" flat @click="logout">Si</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-layout>
   </v-app>
 </template>
 <script>
@@ -112,14 +129,24 @@ export default {
     return {
       sideNav: false,
       reports: false,
+      cerrarSesion: false,
       loading: { show: false }
     };
   },
 
-  computed:{
-    login(){
-      return this.$route.meta.layout ? this.$route.meta.layout : 'toolbar';
+  computed: {
+    login() {
+      return this.$route.meta.layout ? this.$route.meta.layout : "toolbar";
+    }
+  },
+
+  methods: {
+    logout(){
+      localStorage.token = "";
+      this.$router.push('/login');
+      this.cerrarSesion = false;
     }
   }
+
 };
 </script>

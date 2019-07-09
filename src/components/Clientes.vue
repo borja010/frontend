@@ -243,6 +243,7 @@ import services from '../services';
         }else{
           this.reload();
         }
+        this.clienteActivo = -1;
       },
 
       close() {

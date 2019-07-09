@@ -10,8 +10,10 @@
         <v-select
           v-model="pumps"
           :items="availablePumps"
+          item-text="descripcion" 
+          item-value="codigo_manguera"
           :menu-props="{ maxHeight: '400' }"
-          label="Seleccione las bombas/mangueras"
+          label="Seleccione las mangueras"
           multiple
         >
         <template v-slot:prepend-item>
@@ -112,7 +114,7 @@
       <v-data-table :headers="headers" :items="precios" :pagination.sync="pagination" :rows-per-page-items="rowsPerPageItems" loading:="loading" class="elevation-1">
         <template v-slot:items="props">
           <td>{{ props.item.fecha_precio.substr(0, 10) }}</td>
-          <td>{{ props.item.bomba_precio }}</td>
+          <td>{{ props.item.manguera_precio }}</td>
           <td>{{ props.item.tipo_combustible_precio }}</td>
           <td>{{ props.item.precio_unitario_digital }}</td>
           <td>{{ props.item.precio_unitario_mecanica }}</td>
@@ -161,7 +163,7 @@ export default {
       availablePumps: [],
       headers: [
           {text: 'Fecha', value: 'fecha', sortable: false },
-          { text: 'Bomba/Manguera', value: 'bomba', sortable: false },
+          { text: 'Manguera', value: 'Manguera', sortable: false },
           { text: 'Tipo combustible', value: 'tipoCombustible', sortable: false },
           { text: 'Precio digital', value: 'precioDigital', sortable: false },
           { text: 'Precio mecanica', value: 'precioMecanica', sortable: false },
@@ -209,12 +211,10 @@ export default {
     },
 
     reload() {
-      services.obtenerTotalBombaManguera().then(
+      services.obtenerMangueras().then(
         response => {
-          this.availablePumps = Array(response.body.total_bomba_manguera)
-            .fill(0, 0, response.body.total_bomba_manguera)
-            .map((x, i) => i + 1);
-          this.pumps = this.availablePumps;
+          this.availablePumps = response.data;
+          this.fillPumps();
         },
         errorResponse => {
           console.error(errorResponse);
@@ -226,7 +226,7 @@ export default {
       let params = {
         fecha_inicio: this.initialDate,
         fecha_final: this.finalDate,
-        bombas: this.pumps
+        mangueras: this.pumps
       };
       this.loading.show = true;
       services.obtenerPrecioFechas(params).then(
@@ -243,11 +243,17 @@ export default {
     toggle () {
       this.$nextTick(() => {
         if (this.allPumps) {
-          this.pumps = []
+          this.pumps = [];
         } else {
-          this.pumps = this.availablePumps.slice()
+          this.fillPumps();
         }
       })
+    },
+
+    fillPumps(){
+      for(let p of this.availablePumps){
+        this.pumps.push(p.codigo_manguera);
+      }
     },
 
     loadMonth(month){
