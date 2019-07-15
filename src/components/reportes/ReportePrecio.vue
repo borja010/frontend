@@ -215,11 +215,7 @@ export default {
         response => {
           this.availablePumps = response.data;
           this.fillPumps();
-        },
-        errorResponse => {
-          console.error(errorResponse);
-        }
-      );
+        });
     },
 
     loadReport() {
@@ -233,11 +229,7 @@ export default {
         response => {
             this.precios = response.data;
             this.loading.show = false;
-        },
-        errorResponse => {
-          console.error(errorResponse);
-        }
-      );
+        });
     },
 
     toggle () {

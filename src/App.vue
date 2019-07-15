@@ -1,6 +1,10 @@
 <template>
   <v-app>
     <loading-component :loading="loading"></loading-component>
+    <v-snackbar v-model="loading.error" :color="'error'">
+      {{loading.mensaje}}
+    <v-btn dark flat @click="loading.error = false">Cerrar</v-btn>
+    </v-snackbar>
     <div v-if="login !== 'no-toolbar'">
       <v-toolbar app>
         <v-toolbar-side-icon @click.stop="sideNav = !sideNav" class="hidden-sm-and-up"></v-toolbar-side-icon>
@@ -130,7 +134,7 @@ export default {
       sideNav: false,
       reports: false,
       cerrarSesion: false,
-      loading: { show: false }
+      loading: { show: false, error: false }
     };
   },
 
@@ -141,12 +145,11 @@ export default {
   },
 
   methods: {
-    logout(){
+    logout() {
       localStorage.token = "";
-      this.$router.push('/login');
+      this.$router.push("/login");
       this.cerrarSesion = false;
     }
   }
-
 };
 </script>

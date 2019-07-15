@@ -69,6 +69,9 @@ export default {
     guardarUsuario(parametros) {
         return Vue.http.post(this.direccion_ip + "/api/frontend/guardarUsuario/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
     },
+    obtenerUsuario(parametros) {
+        return Vue.http.post(this.direccion_ip + "/api/frontend/obtenerUsuario/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
+    },
     verificarUsuario(parametros) {
         return Vue.http.post(this.direccion_ip + "/api/verificarUsuario/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
     },

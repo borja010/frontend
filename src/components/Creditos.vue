@@ -261,16 +261,8 @@ export default {
             response => {
               this.totalClientes = Number(response.data[0].count);
               this.loading.show = false;
-            },
-            errorResponse => {
-              console.error(errorResponse);
-            }
-          );
-        },
-        errorResponse => {
-          console.error(errorResponse);
-        }
-      );
+            });
+        });
     },
 
     loadTransactions(codigo_cliente) {
@@ -291,16 +283,8 @@ export default {
               this.totalTransacciones = Number(response.data[0].count);
               this.loading.show = false;
               this.dialog = true;
-            },
-            errorResponse => {
-              console.error(errorResponse);
-            }
-          );
-        },
-        errorResponse => {
-          console.error(errorResponse);
-        }
-      );
+            });
+        });
     },
 
     toggle() {

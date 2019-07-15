@@ -217,11 +217,7 @@ import services from '../services';
           services.obtenerClientesTotal(params).then(response =>{
             this.totalClientes = Number(response.data[0].count);
             this.loading = false;
-          }, errorResponse =>{
-            console.error(errorResponse);
           });
-        }, errorResponse =>{
-          console.error(errorResponse);
         });
       },
 
@@ -237,8 +233,6 @@ import services from '../services';
           services.eliminarCliente({codigo_cliente: this.clienteActivo}).then(response =>{
             this.eliminado = true;
             this.reload();
-          }, errorResponse =>{
-              console.error(errorResponse);
           });
         }else{
           this.reload();
@@ -264,8 +258,6 @@ import services from '../services';
             this.close();
             this.reload();
           }
-        }, errorResponse =>{
-            console.error(errorResponse);
         });
       },
 
@@ -283,8 +275,6 @@ import services from '../services';
             this.reload();
             this.updated = true;
           }
-        }, errorResponse =>{
-            console.error(errorResponse);
         });
       },
 

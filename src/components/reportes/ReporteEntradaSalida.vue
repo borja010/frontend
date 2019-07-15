@@ -173,11 +173,7 @@ export default {
         response => {
             this.entradaSalidas = response.data;
             this.loading.show = false;
-        },
-        errorResponse => {
-          console.error(errorResponse);
-        }
-      );
+        });
     },
 
     loadMonth(month){

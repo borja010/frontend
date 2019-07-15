@@ -221,11 +221,7 @@ export default {
         response => {
           this.availablePumps = response.data;
           this.fillPumps();
-        },
-        errorResponse => {
-          console.error(errorResponse);
-        }
-      );
+        });
     },
 
     loadReport() {
@@ -240,11 +236,7 @@ export default {
         response => {
             this.digitales = response.data;
             this.loadChart();
-        },
-        errorResponse => {
-          console.error(errorResponse);
-        }
-      );
+        });
     },
 
     toggle () {
