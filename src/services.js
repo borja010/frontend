@@ -5,8 +5,7 @@ Vue.use(VueResource);
 
 export default {
 
-    //direccion_ip: "http://localhost:8080",
-    direccion_ip:"https://gasolinera.mitalac.com",
+    direccion_ip:process.env.VUE_APP_API,
     obtenerClientes(parametros) {
         return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/obtenerClientes/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
     },

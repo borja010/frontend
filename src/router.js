@@ -17,14 +17,10 @@ const router = new Router({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/login',
-      name: 'login',
+      path: '/',
+      name: '',
       meta: { layout: 'no-toolbar' },
       component: Login
-    },
-    {
-      path: '',
-      redirect: 'login'
     },
     {
       path: '/clientes',
