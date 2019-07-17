@@ -147,7 +147,7 @@ export default {
   methods: {
     logout() {
       localStorage.token = "";
-      this.$router.push("/login");
+      this.$router.push("/");
       this.cerrarSesion = false;
     }
   }

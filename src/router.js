@@ -63,6 +63,10 @@ const router = new Router({
       name: 'reporte_entrada_salida',
       component: ReporteEntradaSalida,
       meta: { requiereAutorizacion: true }
+    },
+    {
+      path: '*',
+      redirect: "/empleados"
     }
   ],
 });
@@ -72,7 +76,7 @@ router.beforeEach(async (to, from, next) => {
     let aux = await estaAutorizado();
     if (!aux) {
       next({
-        path: '/login',
+        path: '',
         query: { redirect: to.fullPath }
       });
     } else {
