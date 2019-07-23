@@ -251,7 +251,9 @@ export default {
 
     fillPumps(){
       for(let p of this.availablePumps){
-        this.pumps.push(p.codigo_manguera);
+        if(!this.pumps.includes(p.codigo_manguera)){
+          this.pumps.push(p.codigo_manguera);
+        }
       }
     },
 
