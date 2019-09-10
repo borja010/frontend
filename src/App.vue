@@ -21,9 +21,9 @@
             <v-btn flat router to="/clientes">
               <v-icon left>face</v-icon>Clientes
             </v-btn>
-            <v-btn flat router to="/creditos">
+            <!-- <v-btn flat router to="/creditos">
               <v-icon left>local_atm</v-icon>Creditos
-            </v-btn>
+            </v-btn> -->
             <v-menu offset-y>
               <template v-slot:activator="{ on }">
                 <v-btn flat v-on="on">
@@ -67,14 +67,14 @@
               <v-list-tile-title>Clientes</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
-          <v-list-tile router to="/creditos">
+          <!-- <v-list-tile router to="/creditos">
             <v-list-tile-action>
               <v-icon>local_atm</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title>Creditos</v-list-tile-title>
             </v-list-tile-content>
-          </v-list-tile>
+          </v-list-tile> -->
           <v-list-tile @click="reports = !reports">
             <v-list-tile-action>
               <v-icon>trending_up</v-icon>
