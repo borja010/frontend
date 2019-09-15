@@ -70,10 +70,6 @@ const router = new Router({
       name: 'reporte_entrada_salida',
       component: ReporteEntradaSalida,
       meta: { requiereAutorizacion: true }
-    },
-    {
-      path: '*',
-      redirect: "/empleados"
     }
   ],
 });
