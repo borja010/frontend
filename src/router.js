@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Login from './components/Login.vue';
+import Politica from './components/Politica.vue';
 import Empleados from './components/Empleados.vue';
 import Creditos from './components/Creditos.vue';
 import Clientes from './components/Clientes.vue';
@@ -21,6 +22,12 @@ const router = new Router({
       name: '',
       meta: { layout: 'no-toolbar' },
       component: Login
+    },
+    {
+      path: '/politica-privacidad',
+      name: '',
+      meta: { layout: 'no-toolbar' },
+      component: Politica
     },
     {
       path: '/clientes',
