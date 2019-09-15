@@ -3,7 +3,7 @@ import Router from 'vue-router';
 import Login from './components/Login.vue';
 import Politica from './components/Politica.vue';
 import Empleados from './components/Empleados.vue';
-import Creditos from './components/Creditos.vue';
+import Vales from './components/Vales.vue';
 import Clientes from './components/Clientes.vue';
 import ReporteAnaloga from './components/reportes/ReporteAnaloga.vue';
 import ReporteDigital from './components/reportes/ReporteDigital.vue';
@@ -42,9 +42,9 @@ const router = new Router({
       meta: { requiereAutorizacion: true }
     },
     {
-      path: '/creditos',
-      name: 'creditos',
-      component: Creditos,
+      path: '/vales',
+      name: 'vales',
+      component: Vales,
       meta: { requiereAutorizacion: true }
     },
     {

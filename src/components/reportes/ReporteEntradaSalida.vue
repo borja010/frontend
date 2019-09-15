@@ -5,8 +5,8 @@
       <v-spacer></v-spacer>
     </v-toolbar>
     <v-layout row wrap>
-      <v-flex xs12 sm1></v-flex>
-      <v-flex xs6 sm2>
+      <v-flex xs2 sm2></v-flex>
+      <v-flex xs5 sm2>
         <v-dialog
           ref="dialogInitial"
           v-model="modalInitialDate"
@@ -32,7 +32,7 @@
           </v-date-picker>
         </v-dialog>
       </v-flex>
-      <v-flex xs6 sm2>
+      <v-flex xs5 sm2>
         <v-dialog
           ref="dialogFinal"
           v-model="modalFinalDate"
@@ -58,7 +58,7 @@
           </v-date-picker>
         </v-dialog>
       </v-flex>
-      <v-flex xs12 sm2>
+      <v-flex xs11 sm2>
         <v-dialog
           ref="dialogMonth"
           v-model="modalMonth"
@@ -78,28 +78,51 @@
           </v-date-picker>
         </v-dialog>
       </v-flex>
-      <v-flex xs12 sm2>
-        <v-btn color="primary" dark class="mb-2" @click="loadReport()">Cargar Reporte</v-btn>
-      </v-flex>
-      <v-flex xs12 sm1></v-flex>
+      <v-flex xs1 sm2></v-flex>
     </v-layout>
     <v-layout row wrap>
-    <v-flex xs12>
-      <v-data-table :headers="headers" :items="entradaSalidas" :pagination.sync="pagination" :rows-per-page-items="rowsPerPageItems" loading:="loading" class="elevation-1">
-        <template v-slot:items="props">
-          <td>{{ props.item.codigo_empleado }}</td>
-          <td>{{ props.item.nombres }}</td>
-          <td>{{ props.item.apellidos }}</td>
-          <td>{{ props.item.fecha_transaccion.substr(0, 10) }}</td>
-          <td>{{ props.item.hora_entrada }}</td>
-          <td>{{ props.item.hora_salida }}</td>
-          <td>{{ returnTime(props.item.total_horas) }}</td>
-        </template>
-        <template v-slot:no-data>
-          No hay datos
-        </template>
-      </v-data-table>
-    </v-flex>
+      <v-flex xs1 sm3></v-flex>
+      <v-flex xs11 sm3>
+        <v-btn color="primary" class="mb-2" @click="loadReport()">Cargar Reporte</v-btn>
+      </v-flex>
+      <v-flex xs11 sm3>
+        <download-csv
+          v-show="false"
+          :data="csv"
+          name="entradas-salidas.csv"
+          :labels="labels"
+          ref="csvGenerator"
+        ></download-csv>
+        <v-btn color="primary" class="mb-2" @click="generateCSV()">Generar CSV</v-btn>
+        <v-snackbar v-model="csvError" :color="'error'">
+          No hay datos para generar el archivo
+          <v-btn dark flat @click="csvError = false">Cerrar</v-btn>
+        </v-snackbar>
+      </v-flex>
+      <v-flex xs1 sm3></v-flex>
+    </v-layout>
+    <v-layout row wrap>
+      <v-flex xs12>
+        <v-data-table
+          :headers="headers"
+          :items="entradaSalidas"
+          :pagination.sync="pagination"
+          :rows-per-page-items="rowsPerPageItems"
+          class="elevation-1"
+        >
+          <template v-slot:items="props">
+            <td>{{ props.item.codigo_empleado }}</td>
+            <td>{{ props.item.nombres }}</td>
+            <td>{{ props.item.apellidos }}</td>
+            <td>{{ props.item.fecha_transaccion.substr(0, 10) }}</td>
+            <td>{{ props.item.hora_entrada }}</td>
+            <td>{{ props.item.hora_salida }}</td>
+            <td>{{ returnTime(props.item.total_horas) }}</td>
+          </template>
+          <template v-slot:no-data>No hay datos</template>
+          <template v-slot:no-results>No hay datos</template>
+        </v-data-table>
+      </v-flex>
     </v-layout>
   </div>
 </template>
@@ -108,17 +131,17 @@
 import services from "../../services";
 
 export default {
-  props:{
+  props: {
     loading: {
       show: Boolean
     }
   },
-  data () {
-    return{
+  data() {
+    return {
       rowsPerPageItems: [5, 10, 15, 20],
       pagination: {
-          page: 1,
-          rowsPerPage: 5,
+        page: 1,
+        rowsPerPage: 5
       },
       modalInitialDate: false,
       modalFinalDate: false,
@@ -128,21 +151,30 @@ export default {
       initialDate: "",
       month: "",
       headers: [
-          {text: 'Codigo Empleado', value: 'codigo_empleado', sortable: false },
-          { text: 'Nombres', value: 'nombres', sortable: false },
-          { text: 'Apellidos', value: 'apellidos', sortable: false },
-          { text: 'Fecha', value: 'fecha_transaccion', sortable: false },
-          { text: 'Entrada', value: 'hora_entrada', sortable: false },
-          { text: 'Salida', value: 'hora_salida', sortable: false },
-          { text: 'Horas', value: 'total_horas', sortable: false },
-        ],
+        { text: "Codigo Empleado", value: "codigo_empleado", sortable: false },
+        { text: "Nombres", value: "nombres", sortable: false },
+        { text: "Apellidos", value: "apellidos", sortable: false },
+        { text: "Fecha", value: "fecha_transaccion", sortable: false },
+        { text: "Entrada", value: "hora_entrada", sortable: false },
+        { text: "Salida", value: "hora_salida", sortable: false },
+        { text: "Horas", value: "total_horas", sortable: false }
+      ],
+      csv: [],
+      csvError: false,
+      labels: {
+        codigo_empleado: "Codigo Empleado",
+        nombres: "Nombre",
+        apellidos: "Apellido",
+        fecha_transaccion: "Fecha",
+        hora_entrada: "Entrada",
+        hora_salida: "Salida",
+        total_horas: "Horas"
+      },
       entradaSalidas: []
-    }
+    };
   },
 
-  computed: {
-
-  },
+  computed: {},
 
   watch: {},
 
@@ -163,31 +195,54 @@ export default {
         .substr(0, 10);
     },
 
+    generateCSV() {
+      let params = {
+        fecha_inicio: this.initialDate,
+        fecha_final: this.finalDate,
+        mangueras: this.pumps
+      };
+      this.loading.show = true;
+      services.obtenerEntradaSalidaFechas(params).then(response => {
+        this.csv = response.data;
+        if (this.csv.length !== 0) {
+          for (let o of this.csv) {
+            o.fecha_transaccion = o.fecha_transaccion.substr(0, 10);
+            o.total_horas = this.returnTime(o.total_horas);
+          }
+          this.$nextTick(() => {
+            this.$refs.csvGenerator.generate();
+          });
+        } else {
+          this.csvError = true;
+        }
+        this.loading.show = false;
+      });
+    },
+
     loadReport() {
       let params = {
         fecha_inicio: this.initialDate,
         fecha_final: this.finalDate
       };
       this.loading.show = true;
-      services.obtenerEntradaSalidaFechas(params).then(
-        response => {
-            this.entradaSalidas = response.data;
-            this.loading.show = false;
-        });
+      services.obtenerEntradaSalidaFechas(params).then(response => {
+        this.entradaSalidas = response.data;
+        this.loading.show = false;
+      });
     },
 
-    loadMonth(month){
-      let aux = month.split('-');
+    loadMonth(month) {
+      let aux = month.split("-");
       let tempDate = new Date(aux[0], aux[1], 0);
-      this.initialDate = month +'-01';
+      this.initialDate = month + "-01";
       this.finalDate = tempDate.toISOString().substr(0, 10);
       this.$refs.dialogMonth.save(month);
     },
 
-    returnTime(value){
-      if(value.minutes){
+    returnTime(value) {
+      if (value.minutes) {
         return value.hours + ":" + value.minutes;
-      }else{
+      } else {
         return value.hours + ":00";
       }
     }

@@ -5,7 +5,7 @@ Vue.use(VueResource);
 
 export default {
 
-    direccion_ip:"https://www.gasolinera.mitalac.com",
+    direccion_ip: "https://www.gasolinera.mitalac.com",
     obtenerClientes(parametros) {
         return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/obtenerClientes/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
     },
@@ -57,14 +57,20 @@ export default {
     obtenerEntradaSalidaFechas(parametros) {
         return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/obtenerEntradaSalidaFechas/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
     },
-    obtenerClientesSaldos(parametros) {
-        return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/obtenerClientesSaldos/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
+    obtenerVales(parametros) {
+        return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/obtenerVales/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
     },
-    obtenerTransaccionesCliente(parametros) {
-        return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/obtenerTransaccionesCliente/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
+    obtenerPagos(parametros) {
+        return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/obtenerPagos/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
     },
-    obtenerTotalTransaccionesCliente(parametros) {
-        return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/obtenerTotalTransaccionesCliente/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
+    obtenerTotalPagos(parametros) {
+        return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/obtenerTotalPagos/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
+    },
+    obtenerValesCliente(parametros) {
+        return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/obtenerValesCliente/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
+    },
+    obtenerTotalValesCliente(parametros) {
+        return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/obtenerTotalValesCliente/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
     },
     guardarUsuario(parametros) {
         return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/guardarUsuario/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });

@@ -169,12 +169,26 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="blue darken-1" flat @click="closeAccount">Cancelar</v-btn>
-            <v-btn color="blue darken-1" flat @click="saveAccount" :disabled="iguales || !valid">Guardar</v-btn>
+            <v-btn
+              color="blue darken-1"
+              flat
+              @click="saveAccount"
+              :disabled="iguales || !valid"
+            >Guardar</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
     </v-toolbar>
-    <v-data-table :headers="headers" :items="empleados" :pagination.sync="pagination" :rows-per-page-items="rowsPerPageItems" :total-items="totalEmpleados" @update:pagination="reload()" loading:="load" class="elevation-1">
+    <v-data-table
+      :headers="headers"
+      :items="empleados"
+      :pagination.sync="pagination"
+      :rows-per-page-items="rowsPerPageItems"
+      :total-items="totalEmpleados"
+      @update:pagination="reload()"
+      :loading="load"
+      class="elevation-1"
+    >
       <template v-slot:items="props">
         <td>{{ props.item.nombres }}</td>
         <td>{{ props.item.apellidos }}</td>
@@ -185,20 +199,16 @@
         <td v-if="props.item.genero == 'm'">Hombre</td>
         <td v-else>Mujer</td>
         <td>
-          <v-icon small class="mr-2" @click="editAccount(props.item)">
-            account_box
-          </v-icon>  
-          <v-icon small class="mr-2" @click="editItem(props.item)">
-            edit
-          </v-icon>
-          <v-icon small @click="empleadoActivo = props.item.codigo_empleado; deleting = true;">
-            delete
-          </v-icon>
+          <v-icon small class="mr-2" @click="editAccount(props.item)">account_box</v-icon>
+          <v-icon small class="mr-2" @click="editItem(props.item)">edit</v-icon>
+          <v-icon
+            small
+            @click="empleadoActivo = props.item.codigo_empleado; deleting = true;"
+          >delete</v-icon>
         </td>
       </template>
-      <template v-slot:no-data>
-        No hay datos
-      </template>
+      <template v-slot:no-data>No hay datos</template>
+      <template v-slot:no-results>No hay datos</template>
     </v-data-table>
     <v-snackbar v-model="deleted" :color="'error'" :timeout="3000">
       El empleado se ha eliminado correctamente
@@ -212,9 +222,7 @@
       El empleado con dpi {{ empleado.dpi }} ya existe
       <v-btn dark flat @click="exist = false">Cerrar</v-btn>
     </v-snackbar>
-    <v-snackbar v-model="iguales" :color="'error'">
-      Las contraseñas no son iguales
-    </v-snackbar>
+    <v-snackbar v-model="iguales" :color="'error'">Las contraseñas no son iguales</v-snackbar>
     <v-snackbar v-model="creado" :color="'success'">
       El Usuario se ha actualizado exitosamente
       <v-btn dark flat @click="creado = false">Cerrar</v-btn>
@@ -226,7 +234,7 @@
 import services from "../services";
 
 export default {
-  props:{
+  props: {
     loading: {
       show: Boolean
     }
@@ -322,7 +330,7 @@ export default {
     },
     validate() {
       return true;
-    },
+    }
   },
 
   watch: {
@@ -342,28 +350,22 @@ export default {
 
     reload() {
       this.loading.show = true;
-      services.obtenerTipoEmpleado().then(
-        response => {
-          this.tipoEmpleado = response.data;
-          this.loading.show = false;
-        }
-      );
+      services.obtenerTipoEmpleado().then(response => {
+        this.tipoEmpleado = response.data;
+        this.loading.show = false;
+      });
       let params = {
         busqueda: this.search,
         limit: this.pagination.rowsPerPage,
         offset: (this.pagination.page - 1) * this.pagination.rowsPerPage
       };
-      services.obtenerEmpleados(params).then(
-        response => {
-          this.empleados = response.data;
-          services.obtenerEmpleadosTotal(params).then(
-            response => {
-              this.totalEmpleados = Number(response.data[0].count);
-              this.load = false;
-            }
-          );
-        }
-      );
+      services.obtenerEmpleados(params).then(response => {
+        this.empleados = response.data;
+        services.obtenerEmpleadosTotal(params).then(response => {
+          this.totalEmpleados = Number(response.data[0].count);
+          this.load = false;
+        });
+      });
     },
 
     editAccount(item) {
@@ -373,18 +375,23 @@ export default {
 
     cargarUsuario() {
       this.loading.show = true;
-      services.obtenerUsuario({codigoUsuario: this.empleadoActivo, tipoAcceso: this.cuenta.tipoAcceso}).then(response => {
-        if(response.body.estado === 1){
-          this.cuenta.usuario = response.body.usuario;
-        }
-        this.loading.show = false;
-      });
+      services
+        .obtenerUsuario({
+          codigoUsuario: this.empleadoActivo,
+          tipoAcceso: this.cuenta.tipoAcceso
+        })
+        .then(response => {
+          if (response.body.estado === 1) {
+            this.cuenta.usuario = response.body.usuario;
+          }
+          this.loading.show = false;
+        });
     },
 
-    validarContrasena(){
-      if(this.cuenta.password === this.cuenta.validar){
+    validarContrasena() {
+      if (this.cuenta.password === this.cuenta.validar) {
         this.iguales = false;
-      }else{
+      } else {
         this.iguales = true;
       }
     },
@@ -393,14 +400,14 @@ export default {
       this.loading.show = true;
       this.cuenta.codigoUsuario = this.empleadoActivo;
       services.guardarUsuario(this.cuenta).then(response => {
-        if(response.body.estado === 1){
+        if (response.body.estado === 1) {
           this.creado = true;
           this.account = false;
           this.resetearCuenta();
-        }else if(response.body.estado === 2){
+        } else if (response.body.estado === 2) {
           this.loading.mensaje = response.body.mensaje;
           this.loading.error = true;
-        }else{
+        } else {
           this.loading.mensaje = "Error al procesar la transaccion";
           this.loading.error = true;
         }
@@ -422,12 +429,10 @@ export default {
       if (evt) {
         services
           .eliminarEmpleado({ codigo_empleado: this.empleadoActivo })
-          .then(
-            response => {
-              this.eliminado = true;
-              this.reload();
-            }
-          );
+          .then(response => {
+            this.eliminado = true;
+            this.reload();
+          });
       } else {
         this.reload();
       }
@@ -450,16 +455,14 @@ export default {
       if (apellidos.length > 0) {
         this.empleado.apellido2 = apellidos.pop();
       }
-      services.insertarEmpleado(this.empleado).then(
-        response => {
-          if (response.body[0].insertar_empleado == -1) {
-            this.exist = true;
-          } else {
-            this.close();
-            this.reload();
-          }
+      services.insertarEmpleado(this.empleado).then(response => {
+        if (response.body[0].insertar_empleado == -1) {
+          this.exist = true;
+        } else {
+          this.close();
+          this.reload();
         }
-      );
+      });
     },
 
     update() {
@@ -468,17 +471,15 @@ export default {
       if (apellidos.length > 0) {
         this.empleado.apellido2 = apellidos.pop();
       }
-      services.modificarEmpleado(this.empleado).then(
-        response => {
-          if (response.body[0].modificar_empleado == -1) {
-            this.exist = true;
-          } else {
-            this.close();
-            this.reload();
-            this.updated = true;
-          }
+      services.modificarEmpleado(this.empleado).then(response => {
+        if (response.body[0].modificar_empleado == -1) {
+          this.exist = true;
+        } else {
+          this.close();
+          this.reload();
+          this.updated = true;
         }
-      );
+      });
     },
 
     resetearForm() {

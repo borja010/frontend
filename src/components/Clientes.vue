@@ -5,28 +5,28 @@
       <v-spacer></v-spacer>
       <v-dialog v-model="deleting" persistent width="500">
         <v-card>
-          <v-card-title class="headline grey lighten-2" primary-title>
-            Eliminar cliente
-          </v-card-title>
+          <v-card-title class="headline grey lighten-2" primary-title>Eliminar cliente</v-card-title>
 
-          <v-card-text>
-            ¿Esta seguro que desea eliminar al cliente?
-          </v-card-text>
+          <v-card-text>¿Esta seguro que desea eliminar al cliente?</v-card-text>
 
           <v-divider></v-divider>
 
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" flat @click="eliminarCliente(false)">
-              No
-            </v-btn>
-            <v-btn color="primary" flat @click="eliminarCliente(true)">
-              Si
-            </v-btn>
+            <v-btn color="primary" flat @click="eliminarCliente(false)">No</v-btn>
+            <v-btn color="primary" flat @click="eliminarCliente(true)">Si</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
-      <v-text-field v-model="search" append-icon="search" label="Buscar" single-line hide-details @change="reload()" @click:append-outer="reload()"></v-text-field>
+      <v-text-field
+        v-model="search"
+        append-icon="search"
+        label="Buscar"
+        single-line
+        hide-details
+        @change="reload()"
+        @click:append-outer="reload()"
+      ></v-text-field>
       <v-spacer></v-spacer>
       <v-dialog v-model="dialog" persistent max-width="500px">
         <template v-slot:activator="{ on }">
@@ -42,11 +42,19 @@
               <v-container grid-list-md>
                 <v-layout wrap>
                   <v-flex xs12 md6>
-                    <v-text-field v-model="cliente.nombres" :rules="validaciones.nombres" label="Nombres"></v-text-field>
+                    <v-text-field
+                      v-model="cliente.nombres"
+                      :rules="validaciones.nombres"
+                      label="Nombres"
+                    ></v-text-field>
                   </v-flex>
 
                   <v-flex xs12 md6>
-                    <v-text-field v-model="cliente.apellidos" :rules="validaciones.apellidos" label="Apellidos"></v-text-field>
+                    <v-text-field
+                      v-model="cliente.apellidos"
+                      :rules="validaciones.apellidos"
+                      label="Apellidos"
+                    ></v-text-field>
                   </v-flex>
 
                   <v-flex xs12 md12>
@@ -54,11 +62,19 @@
                   </v-flex>
 
                   <v-flex xs12 md6>
-                    <v-text-field v-model="cliente.telefono" :rules="validaciones.telefonos" label="Telefono"></v-text-field>
+                    <v-text-field
+                      v-model="cliente.telefono"
+                      :rules="validaciones.telefonos"
+                      label="Telefono"
+                    ></v-text-field>
                   </v-flex>
 
                   <v-flex xs12 md6>
-                    <v-text-field v-model="cliente.celular" :rules="validaciones.telefonos" label="Celular"></v-text-field>
+                    <v-text-field
+                      v-model="cliente.celular"
+                      :rules="validaciones.telefonos"
+                      label="Celular"
+                    ></v-text-field>
                   </v-flex>
 
                   <v-flex xs12 md6>
@@ -66,9 +82,15 @@
                   </v-flex>
 
                   <v-flex xs12 md6>
-                    <v-select v-model="cliente.genero" :items="genero" :rules="validaciones.requerido" item-text="genero" item-value="codigo_genero" label="Genero"></v-select>
+                    <v-select
+                      v-model="cliente.genero"
+                      :items="genero"
+                      :rules="validaciones.requerido"
+                      item-text="genero"
+                      item-value="codigo_genero"
+                      label="Genero"
+                    ></v-select>
                   </v-flex>
-
                 </v-layout>
               </v-container>
             </v-form>
@@ -77,13 +99,28 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="blue darken-1" flat @click="close">Cancelar</v-btn>
-            <v-btn v-if="clienteActivo == -1" color="blue darken-1" flat @click="save" :disabled="!valid">Guardar</v-btn>
+            <v-btn
+              v-if="clienteActivo == -1"
+              color="blue darken-1"
+              flat
+              @click="save"
+              :disabled="!valid"
+            >Guardar</v-btn>
             <v-btn v-else color="blue darken-1" flat @click="update">Modificar</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
     </v-toolbar>
-    <v-data-table :headers="headers" :items="clientes" :pagination.sync="pagination" :rows-per-page-items="rowsPerPageItems" :total-items="totalClientes" @update:pagination="reload()" loading:="loading" class="elevation-1">
+    <v-data-table
+      :headers="headers"
+      :items="clientes"
+      :pagination.sync="pagination"
+      :rows-per-page-items="rowsPerPageItems"
+      :total-items="totalClientes"
+      @update:pagination="reload()"
+      :loading="loadingTable"
+      class="elevation-1"
+    >
       <template v-slot:items="props">
         <td>{{ props.item.nombres }}</td>
         <td>{{ props.item.apellidos }}</td>
@@ -94,203 +131,283 @@
         <td v-if="props.item.genero == 'm'">Hombre</td>
         <td v-else>Mujer</td>
         <td>
-          <v-icon small class="mr-2" @click="editItem(props.item)">
-            edit
-          </v-icon>
-          <v-icon small @click="clienteActivo = props.item.codigo_cliente; deleting = true;">
-            delete
-          </v-icon>
+          <v-icon small class="mr-2" @click="editItem(props.item)">edit</v-icon>
+          <v-icon small @click="clienteActivo = props.item.codigo_cliente; deleting = true;">delete</v-icon>
+          <v-icon small class="mr-2" @click="openVouchers(props.item)">receipt</v-icon>
         </td>
       </template>
-      <template v-slot:no-data>
-        No ha datos
-      </template>
+      <template v-slot:no-data>No hay datos</template>
+      <template v-slot:no-results>No hay datos</template>
     </v-data-table>
-    <v-snackbar v-model="deleted" :color="'error'" :timeout="3000">El cliente se ha eliminado correctamente <v-btn dark flat @click="deleted = false"> Cerrar </v-btn> </v-snackbar>
-    <v-snackbar v-model="updated" :color="'success'" :timeout="3000">El cliente se ha actualizado correctamente <v-btn dark flat @click="updated = false"> Cerrar </v-btn> </v-snackbar>
-    <v-snackbar v-model="exist" :color="'error'" :timeout="3000">El cliente con dpi {{ this.cliente.dpi }} ya existe <v-btn dark flat @click="exist = false"> Cerrar </v-btn> </v-snackbar>
+    <v-snackbar v-model="deleted" :color="'error'" :timeout="3000">
+      El cliente se ha eliminado correctamente
+      <v-btn dark flat @click="deleted = false">Cerrar</v-btn>
+    </v-snackbar>
+    <v-snackbar v-model="updated" :color="'success'" :timeout="3000">
+      El cliente se ha actualizado correctamente
+      <v-btn dark flat @click="updated = false">Cerrar</v-btn>
+    </v-snackbar>
+    <v-snackbar v-model="exist" :color="'error'" :timeout="3000">
+      El cliente con dpi {{ this.cliente.dpi }} ya existe
+      <v-btn dark flat @click="exist = false">Cerrar</v-btn>
+    </v-snackbar>
+    <v-dialog v-model="vouchers" max-width="600">
+      <v-card>
+        <v-card-title class="headline">Vales</v-card-title>
+        <v-card-text>
+          <v-data-table
+            :headers="headersVales"
+            :items="vales"
+            :pagination.sync="paginationVales"
+            :rows-per-page-items="rowsPerPageItems"
+            :total-items="totalVales"
+            class="elevation-1"
+          >
+            <template v-slot:items="props">
+              <td>{{ props.item.numero }}</td>
+              <td>{{ props.item.descripcion }}</td>
+              <td>{{ props.item.monto }}</td>
+              <td>{{ props.item.fecha_v.substr(0, 10) }}</td>
+              <td>{{ props.item.hora_v.substr(0, 8) }}</td>
+              <td>{{ props.item.estado }}</td>
+            </template>
+            <template v-slot:no-data>No hay datos</template>
+            <template v-slot:no-results>No hay datos</template>
+          </v-data-table>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" flat="flat" @click="vouchers = false">Aceptar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
-import services from '../services';
+import services from "../services";
 
-  export default {
-    data: () => ({
-      form: 1,
-      dialog: false,
-      loading: true,
-      valid: false,
-      deleted: false,
-      updated: false,
-      exist: false,
-      deleting: false,
-      search: '',
-      rowsPerPageItems: [5, 10, 15, 20],
-      pagination: {
-          page: 1,
-          rowsPerPage: 5,
-      },
-      totalClientes: 0,
-      headers: [
-        {text: 'Nombres', value: 'nombres', sortable: false },
-        { text: 'Apellidos', value: 'apellidos', sortable: false },
-        { text: 'DPI', value: 'dpi', sortable: false },
-        { text: 'Telefono', value: 'telefono', sortable: false },
-        { text: 'Celular', value: 'celular', sortable: false },
-        { text: 'Nit', value: 'nit', sortable: false },
-        { text: 'Genero', value: 'genero', sortable: false },
-        { text: 'Accion', value: 'accion', sortable: false }
+export default {
+  props: {
+    loading: {
+      show: Boolean
+    }
+  },
+  data: () => ({
+    form: 1,
+    dialog: false,
+    loadingTable: true,
+    valid: false,
+    deleted: false,
+    updated: false,
+    exist: false,
+    deleting: false,
+    vouchers: false,
+    search: "",
+    rowsPerPageItems: [5, 10, 15, 20],
+    pagination: {
+      page: 1,
+      rowsPerPage: 5
+    },
+    totalClientes: 0,
+    headers: [
+      { text: "Nombres", value: "nombres", sortable: false },
+      { text: "Apellidos", value: "apellidos", sortable: false },
+      { text: "DPI", value: "dpi", sortable: false },
+      { text: "Telefono", value: "telefono", sortable: false },
+      { text: "Celular", value: "celular", sortable: false },
+      { text: "Nit", value: "nit", sortable: false },
+      { text: "Genero", value: "genero", sortable: false },
+      { text: "Accion", value: "accion", sortable: false }
+    ],
+    clientes: [],
+    clienteActivo: -1,
+    cliente: {
+      nombres: "",
+      apellidos: "",
+      apellido1: "",
+      apellido2: "",
+      dpi: "",
+      telefono: "",
+      celular: "",
+      nit: "",
+      genero: ""
+    },
+    genero: [
+      { codigo_genero: "m", genero: "Masculino" },
+      { codigo_genero: "f", genero: "Femenino" }
+    ],
+    validaciones: {
+      nombres: [
+        v => !!v || "Campo requerido",
+        v =>
+          (v && v.length < 100) || "Campo no puede ser mayor a 100 caracteres"
       ],
-      clientes: [],
-      clienteActivo: -1,
-      cliente: 
-      {
-        nombres: '',
-        apellidos: '',
-        apellido1: '',
-        apellido2: '',
-        dpi: '',
-        telefono: '',
-        celular: '',
-        nit: '',
-        genero: ''
-      },
-      genero:
-      [
-        {codigo_genero: 'm', genero: 'Masculino'}, 
-        {codigo_genero: 'f', genero: 'Femenino'}
+      apellidos: [
+        v => !!v || "Campo requerido",
+        v =>
+          (v && v.length < 100) || "Campo no puede ser mayor a 100 caracteres"
       ],
-      validaciones:
-      {
-        nombres:[
-          v => !!v || 'Campo requerido',
-          v => (v && v.length < 100) || 'Campo no puede ser mayor a 100 caracteres'
-        ],
-        apellidos:[
-          v => !!v || 'Campo requerido',
-          v => (v && v.length < 100) || 'Campo no puede ser mayor a 100 caracteres'
-        ],
-        telefonos:[
-          v => (v.length < 11 && /^([0-9]*)$/.test(v)) || 'Campo no puede ser mayor a 11 caracteres y solo pueden ser números'
-        ],
-        dpi:[
-          v => !!v || 'Campo requerido',
-          v => (v && v.length < 15 && /^([0-9]*)$/.test(v)) || 'Campo no puede ser mayor a 15 caracteres y solo pueden ser números'
-        ],
-        nit:[
-          v => (v.length < 11 && /^([0-9]*)$/.test(v)) || 'Campo no puede ser mayor a 10 caracteres y solo pueden ser números'
-        ],
-        requerido:[
-          v => !!v || 'Campo requerido'
-        ]
-      }
+      telefonos: [
+        v =>
+          (v.length < 11 && /^([0-9]*)$/.test(v)) ||
+          "Campo no puede ser mayor a 11 caracteres y solo pueden ser números"
+      ],
+      dpi: [
+        v => !!v || "Campo requerido",
+        v =>
+          (v && v.length < 15 && /^([0-9]*)$/.test(v)) ||
+          "Campo no puede ser mayor a 15 caracteres y solo pueden ser números"
+      ],
+      nit: [
+        v =>
+          (v.length < 11 && /^([0-9]*)$/.test(v)) ||
+          "Campo no puede ser mayor a 10 caracteres y solo pueden ser números"
+      ],
+      requerido: [v => !!v || "Campo requerido"]
+    },
+    headersVales: [
+      { text: "Número de vale", value: "numero", sortable: false },
+      { text: "Descripción", value: "descripcion", sortable: false },
+      { text: "Monto", value: "monto", sortable: false },
+      { text: "Fecha", value: "fecha", sortable: false },
+      { text: "Hora", value: "hora", sortable: false },
+      { text: "Estado", value: "estado", sortable: false }
+    ],
+    paginationVales: {
+      page: 1,
+      rowsPerPage: 5
+    },
+    vales: [],
+    totalVales: 0
+  }),
 
-      
-    }),
+  computed: {
+    formTitle() {
+      return this.clienteActivo === -1 ? "Nuevo cliente" : "Editar cliente";
+    }
+  },
 
-    computed: {
-      formTitle () {
-        return this.clienteActivo === -1 ? 'Nuevo cliente' : 'Editar cliente'
-      }
+  watch: {
+    dialog(val) {
+      val || this.close();
+    }
+  },
+
+  created() {
+    this.initialize();
+  },
+
+  methods: {
+    initialize() {
+      this.reload();
     },
 
-    watch: {
-      dialog (val) {
-        val || this.close()
-      }
-    },
-
-    created () {
-      this.initialize()
-    },
-
-    methods: {
-      initialize () {
-        this.reload();
-      },
-
-      reload(){
-        let params = {busqueda: this.search, limit: this.pagination.rowsPerPage, offset: (this.pagination.page-1)*this.pagination.rowsPerPage};
-        services.obtenerClientes(params).then(response =>{
-          this.clientes = response.data;
-          services.obtenerClientesTotal(params).then(response =>{
-            this.totalClientes = Number(response.data[0].count);
-            this.loading = false;
-          });
+    reload() {
+      let params = {
+        busqueda: this.search,
+        limit: this.pagination.rowsPerPage,
+        offset: (this.pagination.page - 1) * this.pagination.rowsPerPage
+      };
+      services.obtenerClientes(params).then(response => {
+        this.clientes = response.data;
+        services.obtenerClientesTotal(params).then(response => {
+          this.totalClientes = Number(response.data[0].count);
+          this.loadingTable = false;
         });
-      },
+      });
+    },
 
-      editItem (item) {
-        this.clienteActivo = item.codigo_cliente;
-        this.cliente = Object.assign({}, item);
-        this.dialog = true
-      },
+    editItem(item) {
+      this.clienteActivo = item.codigo_cliente;
+      this.cliente = Object.assign({}, item);
+      this.dialog = true;
+    },
 
-      eliminarCliente(evt) {
-        this.deleting = false;
-        if(evt){
-          services.eliminarCliente({codigo_cliente: this.clienteActivo}).then(response =>{
+    eliminarCliente(evt) {
+      this.deleting = false;
+      if (evt) {
+        services
+          .eliminarCliente({ codigo_cliente: this.clienteActivo })
+          .then(response => {
             this.eliminado = true;
             this.reload();
           });
-        }else{
+      } else {
+        this.reload();
+      }
+      this.clienteActivo = -1;
+    },
+
+    close() {
+      this.dialog = false;
+      this.resetearForm();
+    },
+
+    save() {
+      let apellidos = this.cliente.apellidos.trim().split(" ");
+      this.cliente.apellido1 = apellidos.shift();
+      if (apellidos.length > 0) {
+        this.cliente.apellido2 = apellidos.pop();
+      }
+      services.insertarCliente(this.cliente).then(response => {
+        if (response.body[0].insertar_cliente == -1) {
+          this.exist = true;
+        } else {
+          this.close();
           this.reload();
         }
-        this.clienteActivo = -1;
-      },
+      });
+    },
 
-      close() {
-        this.dialog = false;
-        this.resetearForm();
-      },
-
-      save () {
-        let apellidos = this.cliente.apellidos.trim().split(' ');
-        this.cliente.apellido1 = apellidos.shift();
-        if(apellidos.length > 0){
-          this.cliente.apellido2 = apellidos.pop();
-        }
-        services.insertarCliente(this.cliente).then(response =>{
-          if(response.body[0].insertar_cliente == -1){
-            this.exist = true;
-          }else{
-            this.close();
-            this.reload();
-          }
-        });
-      },
-
-      update(){
-        let apellidos = this.cliente.apellidos.trim().split(' ');
-        this.cliente.apellido1 = apellidos.shift();
-        if(apellidos.length > 0){
-          this.cliente.apellido2 = apellidos.pop();
-        }
-        services.modificarCliente(this.cliente).then(response =>{
-          if(response.body[0].modificar_cliente == -1){
-            this.exist = true;
-          }else{
-            this.close();
-            this.reload();
-            this.updated = true;
-          }
-        });
-      },
-
-      resetearForm(){
-        this.clienteActivo = -1;
-        this.form++;
-        this.cliente.nombres = '';
-        this.cliente.apellidos = '';
-        this.cliente.apellido1 = '';
-        this.cliente.apellido2 = '';
-        this.cliente.dpi = '';
-        this.cliente.telefono = '';
-        this.cliente.celular = '';
-        this.cliente.nit = '';
-        this.cliente.genero = '';
+    update() {
+      let apellidos = this.cliente.apellidos.trim().split(" ");
+      this.cliente.apellido1 = apellidos.shift();
+      if (apellidos.length > 0) {
+        this.cliente.apellido2 = apellidos.pop();
       }
+      services.modificarCliente(this.cliente).then(response => {
+        if (response.body[0].modificar_cliente == -1) {
+          this.exist = true;
+        } else {
+          this.close();
+          this.reload();
+          this.updated = true;
+        }
+      });
+    },
+
+    resetearForm() {
+      this.clienteActivo = -1;
+      this.form++;
+      this.cliente.nombres = "";
+      this.cliente.apellidos = "";
+      this.cliente.apellido1 = "";
+      this.cliente.apellido2 = "";
+      this.cliente.dpi = "";
+      this.cliente.telefono = "";
+      this.cliente.celular = "";
+      this.cliente.nit = "";
+      this.cliente.genero = "";
+    },
+
+    openVouchers(item) {
+      let params = {
+        cliente: item.codigo_cliente,
+        limit: this.paginationVales.rowsPerPage,
+        offset:
+          (this.paginationVales.page - 1) * this.paginationVales.rowsPerPage
+      };
+      this.loading.show = true;
+      services.obtenerPagos(params).then(response => {
+        this.pagos = response.data;
+        services.obtenerTotalPagos(params).then(response => {
+          this.totalPagos = Number(response.data[0].count);
+          this.loading.show = false;
+          this.vouchers = true;
+        });
+      });
     }
   }
+};
 </script>

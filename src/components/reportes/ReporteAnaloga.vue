@@ -5,31 +5,28 @@
       <v-spacer></v-spacer>
     </v-toolbar>
     <v-layout row wrap>
-      <v-flex xs12 sm1></v-flex>
-      <v-flex xs12 sm2>
+      <v-flex xs1 sm2></v-flex>
+      <v-flex xs11 sm2>
         <v-select
           v-model="pumps"
           :items="availablePumps"
-          item-text="descripcion" 
+          item-text="descripcion"
           item-value="codigo_manguera"
           :menu-props="{ maxHeight: '400' }"
           label="Seleccione las mangueras"
           multiple
         >
-        <template v-slot:prepend-item>
-            <v-list-tile
-            ripple
-            @click="toggle"
-            >
-            <v-list-tile-action>
-              <v-icon :color="pumps.length > 0 ? 'indigo darken-4' : ''">{{ icon }}</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>Seleccionar todos</v-list-tile-title>
-            </v-list-tile-content>
+          <template v-slot:prepend-item>
+            <v-list-tile ripple @click="toggle">
+              <v-list-tile-action>
+                <v-icon :color="pumps.length > 0 ? 'indigo darken-4' : ''">{{ icon }}</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>Seleccionar todos</v-list-tile-title>
+              </v-list-tile-content>
             </v-list-tile>
             <v-divider class="mt-2"></v-divider>
-        </template>
+          </template>
         </v-select>
       </v-flex>
       <v-flex xs6 sm2>
@@ -84,7 +81,7 @@
           </v-date-picker>
         </v-dialog>
       </v-flex>
-      <v-flex xs12 sm2>
+      <v-flex xs11 sm2>
         <v-dialog
           ref="dialogMonth"
           v-model="modalMonth"
@@ -104,38 +101,76 @@
           </v-date-picker>
         </v-dialog>
       </v-flex>
-      <v-flex xs12 sm2>
-        <v-btn color="primary" dark class="mb-2" @click="loadReport()">Cargar Reporte</v-btn>
-      </v-flex>
-      <v-flex xs12 sm1></v-flex>
+      <v-flex xs1 sm2></v-flex>
     </v-layout>
     <v-layout row wrap>
-    <v-flex xs12>
-      <v-data-table :headers="headers" :items="analogas" :pagination.sync="pagination" :rows-per-page-items="rowsPerPageItems" loading:="loading" class="elevation-1">
-        <template v-slot:items="props">
-          <td>{{ props.item.fecha_dif.substr(0, 10) }}</td>
-          <td>{{ props.item.manguera_dif }}</td>
-          <td>{{ props.item.tipo_combustible_dif }}</td>
-          <td>{{ props.item.mecanica_dif }}</td>
-        </template>
-        <template v-slot:no-data>
-          No hay datos
-        </template>
-      </v-data-table>
-    </v-flex>
-    <v-flex xs12>
-       <line-chart v-if="chartLoaded" :chartdata="chartData" :options="chartOptions" :styles="myStyles"/>
-    </v-flex>
+      <v-flex xs1 sm3></v-flex>
+      <v-flex xs11 sm3>
+        <v-btn
+          color="primary"
+          class="mb-2"
+          @click="loadReport()"
+          :disabled="pumps.length === 0"
+        >Cargar Reporte</v-btn>
+      </v-flex>
+      <v-flex xs11 sm3>
+        <download-csv
+          v-show="false"
+          :data="csv"
+          name="analogas.csv"
+          :labels="labels"
+          ref="csvGenerator"
+        ></download-csv>
+        <v-btn
+          color="primary"
+          class="mb-2"
+          @click="generateCSV()"
+          :disabled="pumps.length === 0"
+        >Generar CSV</v-btn>
+        <v-snackbar v-model="csvError" :color="'error'">
+          No hay datos para generar el archivo
+          <v-btn dark flat @click="csvError = false">Cerrar</v-btn>
+        </v-snackbar>
+      </v-flex>
+      <v-flex xs1 sm3></v-flex>
+    </v-layout>
+    <v-layout row wrap>
+      <v-flex xs12>
+        <v-data-table
+          :headers="headers"
+          :items="analogas"
+          :pagination.sync="pagination"
+          :rows-per-page-items="rowsPerPageItems"
+          class="elevation-1"
+        >
+          <template v-slot:items="props">
+            <td>{{ props.item.fecha_dif.substr(0, 10) }}</td>
+            <td>{{ props.item.manguera_dif }}</td>
+            <td>{{ props.item.tipo_combustible_dif }}</td>
+            <td>{{ props.item.mecanica_dif }}</td>
+          </template>
+          <template v-slot:no-data>No hay datos</template>
+          <template v-slot:no-results>No hay datos</template>
+        </v-data-table>
+      </v-flex>
+      <v-flex xs12>
+        <line-chart
+          v-if="chartLoaded"
+          :chartdata="chartData"
+          :options="chartOptions"
+          :styles="myStyles"
+        />
+      </v-flex>
     </v-layout>
   </div>
 </template>
 
 <script>
 import services from "../../services";
-import LineChart from "../charts/Line.vue"
+import LineChart from "../charts/Line.vue";
 
 export default {
-  props:{
+  props: {
     loading: {
       show: Boolean
     }
@@ -144,8 +179,8 @@ export default {
   data: () => ({
     rowsPerPageItems: [5, 10, 15, 20],
     pagination: {
-        page: 1,
-        rowsPerPage: 5,
+      page: 1,
+      rowsPerPage: 5
     },
     chartLoaded: false,
     modalInitialDate: false,
@@ -158,11 +193,19 @@ export default {
     pumps: [],
     availablePumps: [],
     headers: [
-        {text: 'Fecha', value: 'fecha', sortable: false },
-        { text: 'Manguera', value: 'manguera', sortable: false },
-        { text: 'Tipo combustible', value: 'tipoCombustible', sortable: false },
-        { text: 'Mecanicas', value: 'mecanica', sortable: false }
-      ],
+      { text: "Fecha", value: "fecha", sortable: false },
+      { text: "Manguera", value: "manguera", sortable: false },
+      { text: "Tipo combustible", value: "tipoCombustible", sortable: false },
+      { text: "Mecanicas", value: "mecanica", sortable: false }
+    ],
+    csv: [],
+    csvError: false,
+    labels: {
+      fecha_dif: "Fecha",
+      manguera_dif: "Manguera",
+      mecanica_dif: "Tipo combustible",
+      tipo_combustible_dif: "Mecanica"
+    },
     analogas: [],
     chartData: null,
     chartOptions: {
@@ -173,28 +216,26 @@ export default {
 
   computed: {
     allPumps() {
-      return this.pumps.length === this.availablePumps.length
+      return this.pumps.length === this.availablePumps.length;
     },
 
     somePumps() {
-      return this.pumps.length > 0 && !this.allPumps
+      return this.pumps.length > 0 && !this.allPumps;
     },
 
-    icon () {
-      if (this.allPumps) return 'close'
-      if (this.somePumps) return 'indeterminate_check_box'
-      return 'check_box_outline_blank'
+    icon() {
+      if (this.allPumps) return "close";
+      if (this.somePumps) return "indeterminate_check_box";
+      return "check_box_outline_blank";
     },
 
-    myStyles () {
+    myStyles() {
       return {
         height: `300px`,
-        position: 'relative'
-      }
+        position: "relative"
+      };
     }
   },
-
-  watch: {},
 
   created() {
     this.initialize();
@@ -215,11 +256,32 @@ export default {
     },
 
     reload() {
-      services.obtenerMangueras().then(
-        response => {
-          this.availablePumps = response.data;
-          this.fillPumps();
-        });
+      services.obtenerMangueras().then(response => {
+        this.availablePumps = response.data;
+      });
+    },
+
+    generateCSV() {
+      let params = {
+        fecha_inicio: this.initialDate,
+        fecha_final: this.finalDate,
+        mangueras: this.pumps
+      };
+      this.loading.show = true;
+      services.obtenerAnalogasFechas(params).then(response => {
+        this.csv = response.data;
+        if (this.csv.length !== 0) {
+          for (let o of this.csv) {
+            o.fecha_dif = o.fecha_dif.substr(0, 10);
+          }
+          this.$nextTick(() => {
+            this.$refs.csvGenerator.generate();
+          });
+        } else {
+          this.csvError = true;
+        }
+        this.loading.show = false;
+      });
     },
 
     loadReport() {
@@ -230,51 +292,54 @@ export default {
       };
       this.chartLoaded = false;
       this.loading.show = true;
-      services.obtenerAnalogasFechas(params).then(
-        response => {
-            this.analogas = response.data;
-            this.loadChart();
-        });
+      services.obtenerAnalogasFechas(params).then(response => {
+        this.analogas = response.data;
+        this.loadChart();
+      });
     },
 
     toggle() {
       this.$nextTick(() => {
         if (this.allPumps) {
-          this.pumps = []
+          this.pumps = [];
         } else {
           this.fillPumps();
         }
-      })
+      });
     },
 
-    fillPumps(){
-      for(let p of this.availablePumps){
-        if(!this.pumps.includes(p.codigo_manguera)){
+    fillPumps() {
+      for (let p of this.availablePumps) {
+        if (!this.pumps.includes(p.codigo_manguera)) {
           this.pumps.push(p.codigo_manguera);
         }
       }
     },
 
-    loadMonth(month){
-      let aux = month.split('-');
+    loadMonth(month) {
+      let aux = month.split("-");
       let tempDate = new Date(aux[0], aux[1], 0);
-      this.initialDate = month +'-01';
+      this.initialDate = month + "-01";
       this.finalDate = tempDate.toISOString().substr(0, 10);
       this.$refs.dialogMonth.save(month);
     },
 
-    loadChart(){
-      this.chartData = {datasets: [], labels:[]}
-      for(let pump of this.pumps){
-        this.chartData.datasets.push({label: "Manguera " + pump, backgroundColor: 'rgba(37, 116, 169, 0.' + pump + ')',data: []});
+    loadChart() {
+      this.chartData = { datasets: [], labels: [] };
+      for (let pump of this.pumps) {
+        this.chartData.datasets.push({
+          label: "Manguera " + pump,
+          backgroundColor: "rgba(37, 116, 169, 0." + pump + ")",
+          data: []
+        });
       }
-      for(let analoga of this.analogas){
-        for(let chart of this.chartData.datasets){
-          if(chart.label === "Manguera " + analoga.manguera_dif){
+      for (let analoga of this.analogas) {
+        for (let chart of this.chartData.datasets) {
+          if (chart.label === "Manguera " + analoga.manguera_dif) {
             chart.data.unshift(analoga.mecanica_dif);
           }
         }
-        if(!this.chartData.labels.includes(analoga.fecha_dif.substr(0, 10))){
+        if (!this.chartData.labels.includes(analoga.fecha_dif.substr(0, 10))) {
           this.chartData.labels.unshift(analoga.fecha_dif.substr(0, 10));
         }
       }

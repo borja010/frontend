@@ -3,7 +3,7 @@
     <loading-component :loading="loading"></loading-component>
     <v-snackbar v-model="loading.error" :color="'error'">
       {{loading.mensaje}}
-    <v-btn dark flat @click="loading.error = false">Cerrar</v-btn>
+      <v-btn dark flat @click="loading.error = false">Cerrar</v-btn>
     </v-snackbar>
     <div v-if="login !== 'no-toolbar'">
       <v-toolbar app>
@@ -21,8 +21,8 @@
             <v-btn flat router to="/clientes">
               <v-icon left>face</v-icon>Clientes
             </v-btn>
-            <v-btn flat router to="/creditos">
-              <v-icon left>local_atm</v-icon>Creditos
+            <v-btn flat router to="/vales">
+              <v-icon left>assignment</v-icon>Vales
             </v-btn>
             <v-menu offset-y>
               <template v-slot:activator="{ on }">
@@ -67,12 +67,12 @@
               <v-list-tile-title>Clientes</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
-          <v-list-tile router to="/creditos">
+          <v-list-tile router to="/vales">
             <v-list-tile-action>
-              <v-icon>local_atm</v-icon>
+              <v-icon>assignment</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
-              <v-list-tile-title>Creditos</v-list-tile-title>
+              <v-list-tile-title>Vales</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
           <v-list-tile @click="reports = !reports">

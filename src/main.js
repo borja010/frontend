@@ -1,9 +1,12 @@
-import Vue from 'vue'
-import './plugins/vuetify'
-import App from './App.vue'
-import router from './router'
+import Vue from 'vue';
+import JsonCSV from 'vue-json-csv';
+import './plugins/vuetify';
+import App from './App.vue';
+import router from './router';
 
-Vue.config.productionTip = false
+Vue.component('downloadCsv', JsonCSV);
+
+Vue.config.productionTip = false;
 
 new Vue({
   router,
