@@ -2,7 +2,7 @@
   <div>
     <v-btn color="primary" dark @click="changeSpanish()">Español</v-btn>
     <v-btn color="primary" dark @click="changeEnglish()">Ingles</v-btn>
-    <v-btn color="secondary" dark router to="">Regresar</v-btn>
+    <v-btn color="secondary" dark @click="goToLogin()">Regresar</v-btn>
     <div v-if="spanish">
       <h2>Política de privacidad</h2>
       <p>
@@ -372,6 +372,9 @@ export default {
     },
     changeEnglish() {
       this.spanish = false;
+    },
+    goToLogin() {
+      window.open("https://gasolinera.mitalac.com");
     }
   }
 };
