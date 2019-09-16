@@ -131,9 +131,28 @@
         <td v-if="props.item.genero == 'm'">Hombre</td>
         <td v-else>Mujer</td>
         <td>
-          <v-icon small class="mr-2" @click="editItem(props.item)">edit</v-icon>
-          <v-icon small @click="clienteActivo = props.item.codigo_cliente; deleting = true;">delete</v-icon>
-          <v-icon small class="mr-2" @click="openVouchers(props.item)">receipt</v-icon>
+          <v-tooltip top>
+            <template v-slot:activator="{ on }">
+              <v-icon small class="mr-2" @click="editItem(props.item)" v-on="on">edit</v-icon>
+            </template>
+            <span>Editar cliente</span>
+          </v-tooltip>
+          <v-tooltip top>
+            <template v-slot:activator="{ on }">
+              <v-icon
+                small
+                @click="clienteActivo = props.item.codigo_cliente; deleting = true;"
+                v-on="on"
+              >delete</v-icon>
+            </template>
+            <span>Eliminar cliente</span>
+          </v-tooltip>
+          <v-tooltip top>
+            <template v-slot:activator="{ on }">
+              <v-icon small class="mr-2" @click="openVouchers(props.item)" v-on="on">receipt</v-icon>
+            </template>
+            <span>Ver vales</span>
+          </v-tooltip>
         </td>
       </template>
       <template v-slot:no-data>No hay datos</template>
@@ -151,7 +170,7 @@
       El cliente con dpi {{ this.cliente.dpi }} ya existe
       <v-btn dark flat @click="exist = false">Cerrar</v-btn>
     </v-snackbar>
-    <v-dialog v-model="vouchers" max-width="600">
+    <v-dialog v-model="vouchers" max-width="800">
       <v-card>
         <v-card-title class="headline">Vales</v-card-title>
         <v-card-text>
@@ -167,8 +186,8 @@
               <td>{{ props.item.numero }}</td>
               <td>{{ props.item.descripcion }}</td>
               <td>{{ props.item.monto }}</td>
-              <td>{{ props.item.fecha_v.substr(0, 10) }}</td>
-              <td>{{ props.item.hora_v.substr(0, 8) }}</td>
+              <td>{{ props.item.fecha.substr(0, 10) }}</td>
+              <td>{{ props.item.hora.substr(0, 8) }}</td>
               <td>{{ props.item.estado }}</td>
             </template>
             <template v-slot:no-data>No hay datos</template>
@@ -399,10 +418,10 @@ export default {
           (this.paginationVales.page - 1) * this.paginationVales.rowsPerPage
       };
       this.loading.show = true;
-      services.obtenerPagos(params).then(response => {
-        this.pagos = response.data;
-        services.obtenerTotalPagos(params).then(response => {
-          this.totalPagos = Number(response.data[0].count);
+      services.obtenerValesCliente(params).then(response => {
+        this.vales = response.data;
+        services.obtenerTotalValesCliente(params).then(response => {
+          this.totalVales = Number(response.data[0].count);
           this.loading.show = false;
           this.vouchers = true;
         });

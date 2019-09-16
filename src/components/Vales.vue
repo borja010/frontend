@@ -104,8 +104,13 @@
             <td>{{ props.item.hora_v.substr(0, 8) }}</td>
             <td>{{ props.item.nombres_cliente_v }}</td>
             <td>{{ props.item.nombres_empleado_v }}</td>
-            <td>
-              <v-icon small class="mr-2" @click="openPayments(props.item)">input</v-icon>
+            <td v-if="props.item.estado_v !== 'Pendiente'">
+              <v-tooltip top>
+                <template v-slot:activator="{ on }">
+                  <v-icon small class="mr-2" @click="openPayments(props.item)" v-on="on">input</v-icon>
+                </template>
+                <span>Ver pagos</span>
+              </v-tooltip>
             </td>
           </template>
           <template v-slot:no-data>No hay datos</template>
@@ -113,7 +118,7 @@
         </v-data-table>
       </v-flex>
     </v-layout>
-    <v-dialog v-model="payments" max-width="600">
+    <v-dialog v-model="payments" max-width="800">
       <v-card>
         <v-card-title class="headline">Pagos</v-card-title>
         <v-card-text>
@@ -128,8 +133,8 @@
             <template v-slot:items="props">
               <td>{{ props.item.descripcion }}</td>
               <td>{{ props.item.monto }}</td>
-              <td>{{ props.item.fecha_v.substr(0, 10) }}</td>
-              <td>{{ props.item.hora_v.substr(0, 8) }}</td>
+              <td>{{ props.item.fecha.substr(0, 10) }}</td>
+              <td>{{ props.item.hora.substr(0, 8) }}</td>
               <td>{{ props.item.nombres_empleado }}</td>
             </template>
             <template v-slot:no-data>No hay datos</template>
@@ -250,6 +255,7 @@ export default {
       };
       this.loading.show = true;
       services.obtenerPagos(params).then(response => {
+        console.log(response);
         this.pagos = response.data;
         services.obtenerTotalPagos(params).then(response => {
           this.totalPagos = Number(response.data[0].count);

@@ -199,12 +199,28 @@
         <td v-if="props.item.genero == 'm'">Hombre</td>
         <td v-else>Mujer</td>
         <td>
-          <v-icon small class="mr-2" @click="editAccount(props.item)">account_box</v-icon>
-          <v-icon small class="mr-2" @click="editItem(props.item)">edit</v-icon>
-          <v-icon
-            small
-            @click="empleadoActivo = props.item.codigo_empleado; deleting = true;"
-          >delete</v-icon>
+          <v-tooltip top>
+            <template v-slot:activator="{ on }">
+              <v-icon small class="mr-2" @click="editItem(props.item)" v-on="on">edit</v-icon>
+            </template>
+            <span>Editar empleado</span>
+          </v-tooltip>
+          <v-tooltip top>
+            <template v-slot:activator="{ on }">
+              <v-icon
+                small
+                @click="empleadoActivo = props.item.codigo_empleado; deleting = true;"
+                v-on="on"
+              >delete</v-icon>
+            </template>
+            <span>Eliminar empleado</span>
+          </v-tooltip>
+          <v-tooltip top>
+            <template v-slot:activator="{ on }">
+              <v-icon small class="mr-2" @click="editAccount(props.item)" v-on="on">account_box</v-icon>
+            </template>
+            <span>Generar accesos</span>
+          </v-tooltip>
         </td>
       </template>
       <template v-slot:no-data>No hay datos</template>
