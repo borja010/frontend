@@ -147,12 +147,6 @@
             </template>
             <span>Eliminar cliente</span>
           </v-tooltip>
-          <v-tooltip top>
-            <template v-slot:activator="{ on }">
-              <v-icon small class="mr-2" @click="openVouchers(props.item)" v-on="on">receipt</v-icon>
-            </template>
-            <span>Ver vales</span>
-          </v-tooltip>
         </td>
       </template>
       <template v-slot:no-data>No hay datos</template>
@@ -170,36 +164,6 @@
       El cliente con dpi {{ this.cliente.dpi }} ya existe
       <v-btn dark flat @click="exist = false">Cerrar</v-btn>
     </v-snackbar>
-    <v-dialog v-model="vouchers" max-width="800">
-      <v-card>
-        <v-card-title class="headline">Vales</v-card-title>
-        <v-card-text>
-          <v-data-table
-            :headers="headersVales"
-            :items="vales"
-            :pagination.sync="paginationVales"
-            :rows-per-page-items="rowsPerPageItems"
-            :total-items="totalVales"
-            class="elevation-1"
-          >
-            <template v-slot:items="props">
-              <td>{{ props.item.numero }}</td>
-              <td>{{ props.item.descripcion }}</td>
-              <td>{{ props.item.monto }}</td>
-              <td>{{ props.item.fecha.substr(0, 10) }}</td>
-              <td>{{ props.item.hora.substr(0, 8) }}</td>
-              <td>{{ props.item.estado }}</td>
-            </template>
-            <template v-slot:no-data>No hay datos</template>
-            <template v-slot:no-results>No hay datos</template>
-          </v-data-table>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" flat="flat" @click="vouchers = false">Aceptar</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </div>
 </template>
 
@@ -221,7 +185,6 @@ export default {
     updated: false,
     exist: false,
     deleting: false,
-    vouchers: false,
     search: "",
     rowsPerPageItems: [5, 10, 15, 20],
     pagination: {
@@ -273,9 +236,8 @@ export default {
           "Campo no puede ser mayor a 11 caracteres y solo pueden ser números"
       ],
       dpi: [
-        v => !!v || "Campo requerido",
         v =>
-          (v && v.length < 15 && /^([0-9]*)$/.test(v)) ||
+          (v.length < 15 && /^([0-9]*)$/.test(v)) ||
           "Campo no puede ser mayor a 15 caracteres y solo pueden ser números"
       ],
       nit: [
@@ -284,21 +246,7 @@ export default {
           "Campo no puede ser mayor a 10 caracteres y solo pueden ser números"
       ],
       requerido: [v => !!v || "Campo requerido"]
-    },
-    headersVales: [
-      { text: "Número de vale", value: "numero", sortable: false },
-      { text: "Descripción", value: "descripcion", sortable: false },
-      { text: "Monto", value: "monto", sortable: false },
-      { text: "Fecha", value: "fecha", sortable: false },
-      { text: "Hora", value: "hora", sortable: false },
-      { text: "Estado", value: "estado", sortable: false }
-    ],
-    paginationVales: {
-      page: 1,
-      rowsPerPage: 5
-    },
-    vales: [],
-    totalVales: 0
+    }
   }),
 
   computed: {
@@ -408,24 +356,6 @@ export default {
       this.cliente.celular = "";
       this.cliente.nit = "";
       this.cliente.genero = "";
-    },
-
-    openVouchers(item) {
-      let params = {
-        cliente: item.codigo_cliente,
-        limit: this.paginationVales.rowsPerPage,
-        offset:
-          (this.paginationVales.page - 1) * this.paginationVales.rowsPerPage
-      };
-      this.loading.show = true;
-      services.obtenerValesCliente(params).then(response => {
-        this.vales = response.data;
-        services.obtenerTotalValesCliente(params).then(response => {
-          this.totalVales = Number(response.data[0].count);
-          this.loading.show = false;
-          this.vouchers = true;
-        });
-      });
     }
   }
 };

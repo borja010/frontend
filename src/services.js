@@ -6,6 +6,9 @@ Vue.use(VueResource);
 export default {
 
     direccion_ip: "https://www.gasolinera.mitalac.com",
+    obtenerClientesMovil() {
+        return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/obtenerClientesMovil/", {}, { headers: { authorization: 'Bearer ' + localStorage.token } });
+    },
     obtenerClientes(parametros) {
         return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/obtenerClientes/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
     },
@@ -77,6 +80,27 @@ export default {
     },
     obtenerUsuario(parametros) {
         return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/obtenerUsuario/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
+    },
+    obtenerTipoCombustible(parametros) {
+        return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/obtenerTipoCombustible/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
+    },
+    eliminarTipoEmpleado(parametros) {
+        return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/eliminarTipoEmpleado/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
+    },
+    eliminarManguera(parametros) {
+        return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/eliminarManguera/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
+    },
+    eliminarTipoCombustible(parametros) {
+        return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/eliminarTipoCombustible/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
+    },
+    insertarTipoEmpleado(parametros) {
+        return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/insertarTipoEmpleado/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
+    },
+    insertarManguera(parametros) {
+        return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/insertarManguera/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
+    },
+    insertarTipoCombustible(parametros) {
+        return Vue.http.post(this.direccion_ip + "/api/seguro/frontend/insertarTipoCombustible/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });
     },
     verificarUsuario(parametros) {
         return Vue.http.post(this.direccion_ip + "/api/seguro/verificarUsuario/", parametros, { headers: { authorization: 'Bearer ' + localStorage.token } });

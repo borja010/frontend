@@ -5,11 +5,26 @@
       <v-spacer></v-spacer>
     </v-toolbar>
     <v-layout row wrap>
-      <v-flex xs1 sm1></v-flex>
-      <v-flex xs11 sm2>
+      <v-flex xs1 sm2></v-flex>
+      <v-flex xs12 sm3 px-2>
+        <v-autocomplete
+          v-model="cliente"
+          :items="clientes"
+          :loading="loadingLocal"
+          item-text="nombres"
+          item-value="codigo_cliente"
+          label="Seleccionar a un cliente"
+        ></v-autocomplete>
+      </v-flex>
+      <v-flex xs12 sm3 px-2>
         <v-select v-model="estado" :items="estados" label="Seleccione estado"></v-select>
       </v-flex>
-      <v-flex xs6 sm2>
+      <v-flex xs12 sm2>
+        <v-btn color="primary" dark class="mb-2" @click="loadReport()">Cargar Reporte</v-btn>
+      </v-flex>
+      <v-flex xs1 sm2></v-flex>
+      <v-flex xs1 sm2></v-flex>
+      <v-flex xs6 sm3>
         <v-dialog
           ref="dialogInitial"
           v-model="modalInitialDate"
@@ -35,7 +50,7 @@
           </v-date-picker>
         </v-dialog>
       </v-flex>
-      <v-flex xs6 sm2>
+      <v-flex xs6 sm3>
         <v-dialog
           ref="dialogFinal"
           v-model="modalFinalDate"
@@ -81,10 +96,11 @@
           </v-date-picker>
         </v-dialog>
       </v-flex>
-      <v-flex xs11 sm2>
-        <v-btn color="primary" dark class="mb-2" @click="loadReport()">Cargar Reporte</v-btn>
+      <v-flex xs1 sm2></v-flex>
+      <v-flex xs12 sm12 class="text-xs-center title">
+        Total monto vales: {{montoVales}}
+        Total vales: {{totalVales}}
       </v-flex>
-      <v-flex xs1 sm1></v-flex>
     </v-layout>
     <v-layout row wrap>
       <v-flex xs12>
@@ -161,6 +177,7 @@ export default {
   },
   data() {
     return {
+      loadingLocal: false,
       modalInitialDate: false,
       modalFinalDate: false,
       modalMonth: false,
@@ -169,8 +186,10 @@ export default {
       finalDate: "",
       initialDate: "",
       month: "",
-      estados: ["Pendiente", "Parcial", "Pagado"],
-      estado: "Pendiente",
+      estados: ["Todos", "Pendiente", "Parcial", "Pagado"],
+      estado: "Todos",
+      cliente: -1,
+      clientes: [],
       headers: [
         { text: "Número de vale", value: "numero_v", sortable: false },
         { text: "Descripción", value: "descripcion_v", sortable: false },
@@ -204,7 +223,18 @@ export default {
     };
   },
 
-  computed: {},
+  computed: {
+    montoVales() {
+      let total = 0.0;
+      for (let val of this.vales) {
+        total += parseFloat(val.monto_v);
+      }
+      return total;
+    },
+    totalVales() {
+      return this.vales.length;
+    }
+  },
 
   watch: {},
 
@@ -223,17 +253,25 @@ export default {
       )
         .toISOString()
         .substr(0, 10);
+      this.loadingLocal = true;
+      services.obtenerClientesMovil().then(response => {
+        this.clientes = response.data.rows;
+        this.clientes.unshift({ codigo_cliente: -1, nombres: "Todos" });
+        this.loadingLocal = false;
+      });
     },
 
     loadReport() {
       let params = {
         fecha_inicio: this.initialDate,
         fecha_final: this.finalDate,
-        estado: this.estado
+        estado: this.estado,
+        cliente: this.cliente
       };
       this.loading.show = true;
       services.obtenerVales(params).then(response => {
         this.vales = response.data;
+        console.log(this.vales);
         this.loading.show = false;
       });
     },
@@ -255,7 +293,6 @@ export default {
       };
       this.loading.show = true;
       services.obtenerPagos(params).then(response => {
-        console.log(response);
         this.pagos = response.data;
         services.obtenerTotalPagos(params).then(response => {
           this.totalPagos = Number(response.data[0].count);

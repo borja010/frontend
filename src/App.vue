@@ -46,6 +46,9 @@
               </v-list>
             </v-menu>
             <v-btn flat @click="cerrarSesion = true">Cerrar Sesion</v-btn>
+            <v-btn flat router to="/configuraciones">
+              <v-icon left>settings_applications</v-icon>
+            </v-btn>
           </v-toolbar-items>
         </template>
       </v-toolbar>
@@ -101,6 +104,11 @@
             <v-list-tile-content>
               <v-list-tile-title>Cerrar Sesion</v-list-tile-title>
             </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile router to="/configuraciones">
+            <v-list-tile-action>
+              <v-icon>settings_applications</v-icon>
+            </v-list-tile-action>
           </v-list-tile>
         </v-list>
       </v-navigation-drawer>

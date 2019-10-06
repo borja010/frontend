@@ -5,6 +5,7 @@ import Politica from './components/Politica.vue';
 import Empleados from './components/Empleados.vue';
 import Vales from './components/Vales.vue';
 import Clientes from './components/Clientes.vue';
+import Configuraciones from './components/Configuraciones.vue';
 import ReporteAnaloga from './components/reportes/ReporteAnaloga.vue';
 import ReporteDigital from './components/reportes/ReporteDigital.vue';
 import ReportePrecio from './components/reportes/ReportePrecio.vue';
@@ -45,6 +46,12 @@ const router = new Router({
       path: '/vales',
       name: 'vales',
       component: Vales,
+      meta: { requiereAutorizacion: true }
+    },
+    {
+      path: '/configuraciones',
+      name: 'configuraciones',
+      component: Configuraciones,
       meta: { requiereAutorizacion: true }
     },
     {
